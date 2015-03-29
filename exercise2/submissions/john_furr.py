@@ -4,7 +4,6 @@ from os.path import abspath, join, dirname
 import pandas as pd
 import numpy as np
 import scipy.stats as stats
-import filecmp
 
 # Set some module level constants for input and output directories
 PROGDIR = dirname(abspath(__file__))
