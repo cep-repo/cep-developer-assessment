@@ -3,6 +3,7 @@ import os
 from os.path import abspath, join, dirname
 import pandas as pd
 import json
+from collections import OrderedDict
 
 # Set some module level constants for input and output directories
 PROGDIR = dirname(abspath(__file__))
@@ -28,32 +29,30 @@ def get_report_for_customer(name=None):
     pct_data = pd.read_csv(join(INDIR, "pct.csv"), index_col=0)
 
     # Create base json skeleton for the Client Report.
-    report = {
-        "name":"{0} Report".format(name),
-        "title":"{0} Report".format(name),
-        "cohorts": [],
-        "segmentations": [],
-        "elements":{
-
-        }
-    }
+    report = OrderedDict([
+        ("name","{0} Report".format(name)),
+        ("title","{0} Report".format(name)),
+        ("cohorts", []),
+        ("segmentations", []),
+        ("elements",OrderedDict())
+    ])
 
     elements = report['elements']
 
     # fill in the elements dictionary with the data from the 9 reports
     for key in stat_data.columns.values:
-        elements[key] = {
-            "type": "percentileChart",
-            "absolutes":get_absolutes(key, stat_data),
-            "current":{
-                "name": "2014",
-                "value": mean_data[key][name],
-                "percentage":pct_data[key][name],
-                },
-            "cohorts": [],
-            "past_results": [],
-            "segmentations": []
-        }
+        elements[key] = OrderedDict([
+            ("type", "percentileChart"),
+            ("absolutes", get_absolutes(key, stat_data)),
+            ("current",OrderedDict([
+                ("name", "2014"),
+                ("value", mean_data[key][name]),
+                ("percentage", pct_data[key][name]),
+            ])),
+            ("cohorts", []),
+            ("past_results", []),
+            ("segmentations", [])
+        ])
 
     return report 
 
@@ -99,7 +98,7 @@ def test_output(outfile):
 if __name__ == '__main__':
     # build base skeleton report.  All Client repots should be stored as a 
     # a dictionary of values in the reports section. 
-    output = {
+    output = OrderedDict({
         "version":"1.0",
         "reports":[
             get_report_for_customer("Tremont 14S"),
@@ -107,7 +106,7 @@ if __name__ == '__main__':
             # or you could loop over a list and append the reports 
             # to the output['reports'[ list.
         ]
-    }
+    })
  
     outfile = (join(OUTDIR, "output_comp.json"))
     with open(outfile, 'w') as f:
