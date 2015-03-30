@@ -29,20 +29,15 @@ def cal_percentiles(client_col='fdntext', infile='', usecols=None, datacols=None
         columns=usecols,
     )
     stats_data['fdntext'] = client_codes
-  
-    # Note: I looked through the panda, numpy and scipy docs and 
-    #       didn't turn up a percentile function?  Perhaps I just
-    #       missed it, but in any event the calculation is straight
-    #       forward with numpy array's so I did it by hand.
-    #
-    #   percentile = 100-(below + 0.5)/total*100
+     
+    # Calculate percentiles for each client score using scypi.stats.percentileofscore
     for colname in datacols:
         col = input_data[colname]
-        total = len(col)
-        rank = stats.mstats.rankdata(col)
-        below = np.array([ total-x+0.5 for x in rank])
-        stats_data[colname] = 100-(below/total*100)
-
+        percentiles=[]
+        for val in col:
+            percentiles.append(stats.percentileofscore(col, val, kind='mean'))
+        stats_data[colname] = percentiles
+        
     return stats_data
 
 
