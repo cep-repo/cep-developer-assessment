@@ -22,7 +22,7 @@ def cal_percentiles(client_col='fdntext', infile='', usecols=None, datacols=None
 
     # Read in the input data xl.csv
     input_data = pd.read_csv(infile, usecols=usecols)
-    client_codes = sorted(list(set(input_data[client_col])))
+    client_codes = input_data['fdntext'].unique().tolist()
 
     stats_data = pd.DataFrame(
         index=np.arange(0, len(client_codes)),
